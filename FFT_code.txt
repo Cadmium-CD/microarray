@@ -1,0 +1,133 @@
+#include "mbed.h"
+#include "N5110.h"
+
+extern "C" void fftR4(short *y, short *x, int N);
+
+float magnitude(short y1, short y2);
+void updateSamples();
+void doFFT();
+void printSpectrum();
+void printSamples();
+//void ledBarGraph();
+
+int calcPeakFrequency();
+
+AnalogIn audio1(p19);// ADC pin must be biased at Vcc/2 using coupling capacitor and potential divider
+AnalogIn audio2(p20);  
+BusOut leds(LED1,LED2,LED3,LED4);
+LocalFileSystem local("local");               // Create the local filesystem under the name "local"
+//Serial serial(USBTX,USBRX);
+
+//    VCC,SCE,RST,D/C,MOSI,SCLK,LED
+
+
+
+
+#define BUF_LEN 512
+#define SAMP_FREQ 10000
+#define INTERAL_US 1e6/SAMP_FREQ
+
+short sample1[BUF_LEN];  // store the values read from ADC
+short sample2[BUF_LEN]; 
+short mx[BUF_LEN*2]; // input data 16 bit, 4 byte aligned  x0r,x0i,x1r,x1i,....
+short my[BUF_LEN*2]; // output data 16 bit,4 byte aligned  y0r,y0i,y1r,y1i,....
+float spectrum1[BUF_LEN/2];  // frequency spectrum
+float spectrum2[BUF_LEN/2];
+unsigned int wp = 0;
+
+
+//char buffer[14];  // screen buffer
+
+//int tone;
+
+int main()
+{
+    
+
+    leds = 15;
+    wait(2.0);   // short pause to allow coupling capacitor to charge
+    leds = 0;
+ 
+
+    while(1) {
+
+
+        updateSamples();  // read in new analog values
+        doFFT();          // calc FFT
+        printSpectrum();
+        //printSamples();
+        //tone = calcPeakFrequency();  // calculate peak frequcny and send over serial for debug
+
+    }
+}
+
+//serial.printf("RMS = %f\n",rms);
+}
+
+float magnitude(short y1, short y2)
+{
+    return sqrt(float(y1*y1+y2*y2));  // pythagoras
+}
+
+void updateSamples()
+{
+    ticker.attach_us(tickrec, INTERAL_US);
+    while (wp < BUF_LEN) {
+        }
+    ticker.detach();
+    wp = 0;
+}
+
+void tickrec(void)
+{
+    
+        sample1[wp] = (short) (audio1.read_u16() - 0x8000);  // read unsigned 16-bit and convert to signed 16-bit (subtract 32768)
+        sample2[wp] = (short) (audio2.read_u16() - 0x8000); 
+        wp ++;
+      
+}
+
+void doFFT()
+{
+    // clear buffers
+    for (int i=0; i<2*BUF_LEN; i++) {
+        my[i] = 0;
+        mx[i] = 0;
+    }
+
+    for (int i=0; i<BUF_LEN; i++) { // load samples in array (skip imaginary input values)
+        mx[i*2]=sample1[i];
+    }
+
+    fftR4(my, mx, BUF_LEN);  // call FFT routine
+
+    int j = 0;
+    for (int i = 0; i < BUF_LEN; i+=2) {
+        spectrum[j] = magnitude(my[i],my[i+1]);  // get magnitude of FFT output to get spectrum data
+        j++;
+    }
+}
+
+void printSpectrum()
+{
+    FILE *fp = fopen("/local/fft.csv","w");
+    //now write a CSV file to filesytem of frequency vs amplitude
+    int j = 0;
+    for (int i = 0; i < BUF_LEN; i+=2) {
+        int frequency = int(SAMP_FREQ/BUF_LEN/2*i);  // calculate value of frequency bin
+        fprintf(fp, "%d,%f\n", frequency, spectrum[j]);
+        j++;
+    }
+    fclose(fp);
+}
+
+void printSamples()
+{
+    FILE *fp = fopen("/local/samples.csv","w");
+    //now write a CSV file to filesytem of frequency vs amplitude
+    for (int i = 0; i < BUF_LEN; i++) {
+        fprintf(fp, "%d\n", samples[i]);
+    }
+    fclose(fp);
+}
+
