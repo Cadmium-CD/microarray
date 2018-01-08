@@ -68,7 +68,7 @@ int main()
 
         updateSamples();  // read in new analog values
         doFFT();          // calc FFT
-        //printSpectrum();
+        printSpectrum();
         //printSamples();
         //tone = calcPeakFrequency();  // calculate peak frequcny and send over serial for debug
         break;
@@ -97,7 +97,7 @@ void updateSamples()
 {
     ticker.attach_us(tickrec, INTERAL_US);
     while (wp < BUF_LEN) {
-        //printf("%d\n",wp);
+        printf("%d\n",wp);
         }
     ticker.detach();
     wp = 0;
@@ -143,16 +143,46 @@ void doFFT()
 void printSpectrum()
 {
     
-    FILE *fp = fopen("/local/fft1.csv","w");
-    printf("start");
+    FILE *fp1 = fopen("/local/fft1.csv","w");
     //now write a CSV file to filesytem of frequency vs amplitude
     int j = 0;
     for (int i = 0; i < BUF_LEN; i+=2) {
         int frequency = int(SAMP_FREQ/BUF_LEN/2*i);  // calculate value of frequency bin
-        fprintf(fp, "%d,%f\n", frequency, spectrum1[j]);
+        fprintf(fp1, "%d,%f\n", my1[i],my1[i+1]);
         j++;
     }
-    fclose(fp);
+    fclose(fp1);
+    
+    FILE *fp2 = fopen("/local/fft2.csv","w");
+    //now write a CSV file to filesytem of frequency vs amplitude
+    j = 0;
+    for (int i = 0; i < BUF_LEN; i+=2) {
+        int frequency = int(SAMP_FREQ/BUF_LEN/2*i);  // calculate value of frequency bin
+        fprintf(fp2, "%d,%f\n", my2[i],my2[i+1]);
+        j++;
+    }
+    fclose(fp2);
+    
+    FILE *fp3 = fopen("/local/fft3.csv","w");
+    //now write a CSV file to filesytem of frequency vs amplitude
+    j = 0;
+    for (int i = 0; i < BUF_LEN; i+=2) {
+        int frequency = int(SAMP_FREQ/BUF_LEN/2*i);  // calculate value of frequency bin
+        fprintf(fp3, "%d,%f\n", my3[i],my3[i+1]);
+        j++;
+    }
+    fclose(fp3);
+    
+    FILE *fp4 = fopen("/local/fft4.csv","w");
+    //now write a CSV file to filesytem of frequency vs amplitude
+    j = 0;
+    for (int i = 0; i < BUF_LEN; i+=2) {
+        int frequency = int(SAMP_FREQ/BUF_LEN/2*i);  // calculate value of frequency bin
+        fprintf(fp4, "%d,%f\n", my4[i],my4[i+1]);
+        j++;
+    }
+    fclose(fp4);
+    printf("start\n");
 }
 
 void printSamples()
