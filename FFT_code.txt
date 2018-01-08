@@ -14,8 +14,8 @@ int calcPeakFrequency();
 
 AnalogIn audio1(p17);// ADC pin must be biased at Vcc/2 using coupling capacitor and potential divider
 AnalogIn audio2(p18);  
-AnalogIn audio2(p19);
-AnalogIn audio2(p20);
+AnalogIn audio3(p19);
+AnalogIn audio4(p20);
 Ticker ticker;
 BusOut leds(LED1,LED2,LED3,LED4);
 LocalFileSystem local("local");               // Create the local filesystem under the name "local"
@@ -26,7 +26,7 @@ LocalFileSystem local("local");               // Create the local filesystem und
 
 
 
-#define BUF_LEN 1024
+#define BUF_LEN 512
 #define SAMP_FREQ 10000
 #define INTERAL_US 1e6/SAMP_FREQ
 
@@ -97,7 +97,7 @@ void updateSamples()
 {
     ticker.attach_us(tickrec, INTERAL_US);
     while (wp < BUF_LEN) {
-        printf("%d\n",wp);
+        //printf("%d\n",wp);
         }
     ticker.detach();
     wp = 0;
@@ -110,9 +110,9 @@ void initiate_buffer(){
         my3[i] = 0;
         my4[i] = 0;
         mx1[i] = 0;
-        my2[i] = 0;
-        my3[i] = 0;
-        my4[i] = 0;
+        mx2[i] = 0;
+        mx3[i] = 0;
+        mx4[i] = 0;
     }
     }
 void doFFT()
