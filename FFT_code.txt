@@ -12,16 +12,14 @@ void printSamples();
 
 int calcPeakFrequency();
 
-AnalogIn audio1(p17);// ADC pin must be biased at Vcc/2 using coupling capacitor and potential divider
-AnalogIn audio2(p18);  
-AnalogIn audio3(p19);
-AnalogIn audio4(p20);
+AnalogIn audio1(p15);// ADC pin must be biased at Vcc/2 using coupling capacitor and potential divider
+AnalogIn audio2(p16);  
+AnalogIn audio3(p17);
+AnalogIn audio4(p18);
 Ticker ticker;
 BusOut leds(LED1,LED2,LED3,LED4);
 LocalFileSystem local("local");               // Create the local filesystem under the name "local"
-//Serial serial(USBTX,USBRX);
 
-//    VCC,SCE,RST,D/C,MOSI,SCLK,LED
 
 
 
@@ -59,7 +57,7 @@ int main()
     
 
     leds = 15;
-    wait(2.0);   // short pause to allow coupling capacitor to charge
+    wait(3.0);   // short pause to allow coupling capacitor to charge
     leds = 0;
  
 
@@ -69,7 +67,7 @@ int main()
         updateSamples();  // read in new analog values
         doFFT();          // calc FFT
         printSpectrum();
-        //printSamples();
+        printSamples();
         //tone = calcPeakFrequency();  // calculate peak frequcny and send over serial for debug
         break;
     }
@@ -88,8 +86,8 @@ void tickrec(void)
     
         sample1[wp] = (short) (audio1.read_u16() - 0x8000);  // read unsigned 16-bit and convert to signed 16-bit (subtract 32768)
         sample2[wp] = (short) (audio2.read_u16() - 0x8000); 
-        sample3[wp] = (short) (audio2.read_u16() - 0x8000); 
-        sample4[wp] = (short) (audio2.read_u16() - 0x8000); 
+        sample3[wp] = (short) (audio3.read_u16() - 0x8000); 
+        sample4[wp] = (short) (audio4.read_u16() - 0x8000); 
         wp ++;
       
 }
@@ -129,7 +127,7 @@ void doFFT()
     fftR4(my2, mx2, BUF_LEN); 
     fftR4(my3, mx3, BUF_LEN); 
     fftR4(my4, mx4, BUF_LEN); 
-    printf("FFT done\n");
+    //printf("FFT done\n");
     int j = 0;
     for (int i = 0; i < BUF_LEN; i+=2) {
         spectrum1[j] = magnitude(my1[i],my1[i+1]);  // get magnitude of FFT output to get spectrum data
@@ -148,7 +146,7 @@ void printSpectrum()
     int j = 0;
     for (int i = 0; i < BUF_LEN; i+=2) {
         int frequency = int(SAMP_FREQ/BUF_LEN/2*i);  // calculate value of frequency bin
-        fprintf(fp1, "%d,%f\n", my1[i],my1[i+1]);
+        fprintf(fp1, "%d,%f\n", frequency, spectrum1[j]);
         j++;
     }
     fclose(fp1);
@@ -158,7 +156,7 @@ void printSpectrum()
     j = 0;
     for (int i = 0; i < BUF_LEN; i+=2) {
         int frequency = int(SAMP_FREQ/BUF_LEN/2*i);  // calculate value of frequency bin
-        fprintf(fp2, "%d,%f\n", my2[i],my2[i+1]);
+        fprintf(fp2, "%d,%f\n", frequency, spectrum2[j]);
         j++;
     }
     fclose(fp2);
@@ -168,7 +166,7 @@ void printSpectrum()
     j = 0;
     for (int i = 0; i < BUF_LEN; i+=2) {
         int frequency = int(SAMP_FREQ/BUF_LEN/2*i);  // calculate value of frequency bin
-        fprintf(fp3, "%d,%f\n", my3[i],my3[i+1]);
+        fprintf(fp3, "%d,%f\n", frequency, spectrum3[j]);
         j++;
     }
     fclose(fp3);
@@ -178,11 +176,11 @@ void printSpectrum()
     j = 0;
     for (int i = 0; i < BUF_LEN; i+=2) {
         int frequency = int(SAMP_FREQ/BUF_LEN/2*i);  // calculate value of frequency bin
-        fprintf(fp4, "%d,%f\n", my4[i],my4[i+1]);
+        fprintf(fp4, "%d,%f\n", frequency, spectrum4[j]);
         j++;
     }
     fclose(fp4);
-    printf("start\n");
+    //printf("start\n");
 }
 
 void printSamples()
@@ -193,5 +191,26 @@ void printSamples()
         fprintf(fp, "%d\n", sample1[i]);
     }
     fclose(fp);
+    
+    FILE *fp2 = fopen("/local/samples2.csv","w");
+    //now write a CSV file to filesytem of frequency vs amplitude
+    for (int i = 0; i < BUF_LEN; i++) {
+        fprintf(fp, "%d\n", sample2[i]);
+    }
+    fclose(fp2);
+    
+    FILE *fp3 = fopen("/local/samples3.csv","w");
+    //now write a CSV file to filesytem of frequency vs amplitude
+    for (int i = 0; i < BUF_LEN; i++) {
+        fprintf(fp3, "%d\n", sample3[i]);
+    }
+    fclose(fp3);
+    
+    FILE *fp4 = fopen("/local/samples4.csv","w");
+    //now write a CSV file to filesytem of frequency vs amplitude
+    for (int i = 0; i < BUF_LEN; i++) {
+        fprintf(fp4, "%d\n", sample4[i]);
+    }
+    fclose(fp4);
 }
 
