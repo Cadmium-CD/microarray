@@ -24,7 +24,7 @@ LocalFileSystem local("local");               // Create the local filesystem und
 
 
 
-#define BUF_LEN 512
+#define BUF_LEN 256
 #define SAMP_FREQ 10000
 #define INTERAL_US 1e6/SAMP_FREQ
 
@@ -59,18 +59,17 @@ int main()
     leds = 15;
     wait(3.0);   // short pause to allow coupling capacitor to charge
     leds = 0;
- 
+    //printf("END");
 
-    while(1) {
+    
 
 
         updateSamples();  // read in new analog values
         doFFT();          // calc FFT
-        printSpectrum();
+        //printSpectrum();
         printSamples();
         //tone = calcPeakFrequency();  // calculate peak frequcny and send over serial for debug
-        break;
-    }
+    
 }
 
 
@@ -95,9 +94,11 @@ void updateSamples()
 {
     ticker.attach_us(tickrec, INTERAL_US);
     while (wp < BUF_LEN) {
-        printf("%d\n",wp);
+        leds = 12;
+        //printf("%d\n",wp);
         }
     ticker.detach();
+    leds = 0;
     wp = 0;
 }
 void initiate_buffer(){
@@ -185,6 +186,7 @@ void printSpectrum()
 
 void printSamples()
 {
+    
     FILE *fp = fopen("/local/samples1.csv","w");
     //now write a CSV file to filesytem of frequency vs amplitude
     for (int i = 0; i < BUF_LEN; i++) {
@@ -212,5 +214,6 @@ void printSamples()
         fprintf(fp4, "%d\n", sample4[i]);
     }
     fclose(fp4);
+    
 }
 
