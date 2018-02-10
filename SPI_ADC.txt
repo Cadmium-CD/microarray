@@ -1,7 +1,9 @@
 #include "mbed.h"
 
 #define CH_NUM  4
-#define BUF_LEN 512
+#define BUF_LEN 513
+#define SAMP_FREQ 44000
+#define INTERAL_US 1e6/SAMP_FREQ
  
 SPI spi(p5, p6, p7); // mosi, miso, sclk
 DigitalOut cs(p8);
@@ -9,7 +11,10 @@ DigitalIn busy(p9);
 DigitalOut rst(p10);
 DigitalOut convst(p20);
 DigitalOut myled(LED1);
-LocalFileSystem local("local");  
+DigitalOut myled2(LED2);
+LocalFileSystem local("local");
+  
+Ticker ticker;
 
 int16_t sample1[BUF_LEN];  // store the values read from ADC
 int16_t sample2[BUF_LEN]; 
@@ -17,6 +22,7 @@ int16_t sample3[BUF_LEN];
 int16_t sample4[BUF_LEN]; 
 
 int wp = 0;
+int flag = 0;
 static int16_t s_adc_now[CH_NUM];
 
 //reset function
@@ -24,7 +30,7 @@ void AD7606_Reset(){
         cs = 1;
         convst = 1;
         convst = 1;
-         /* AD7606 is high level reset，at least 50ns */
+         /* AD7606 is high level reset£¬at least 50ns */
         rst = 0;
         //delayMicroseconds(1);
         rst = 1;
@@ -36,7 +42,7 @@ void AD7606_Reset(){
 }
 //conversion function
 void AD7606_StartConv(){
-        /* Conv in rising edge，at least 25ns  */
+        /* Conv in rising edge£¬at least 25ns  */
         convst = 0;
         convst = 0;
         convst = 0;
@@ -44,6 +50,8 @@ void AD7606_StartConv(){
         //delayMicroseconds(1);
         convst = 1;
         myled = busy;
+        flag = 1;
+        //myled2 = flag;
 }
 
 
@@ -58,37 +66,66 @@ void updateSamples()
 }
  
 void printSamples()
-{
-    FILE *fp = fopen("/local/samples1.csv","w");
-    for (int i = 0; i < BUF_LEN; i++) {
-        fprintf(fp, "%d\n", sample1[i]);
+{   ///////
+    FILE *fp1 = fopen("/local/samples1.csv","w");
+    for (int i = 1; i < BUF_LEN; i++) {
+        fprintf(fp1, "%d\n", sample1[i]);
         myled = 0;
     }
-    fclose(fp);
-    printf("a\n");
+    fclose(fp1);
+    myled = 1;
+    /////////
+    FILE *fp2 = fopen("/local/samples2.csv","w");
+    for (int i = 1; i < BUF_LEN; i++) {
+        fprintf(fp2, "%d\n", sample2[i]);
+        myled = 0;
+    }
+    fclose(fp2);
+    myled = 1;
+    ///////
+    FILE *fp3 = fopen("/local/samples3.csv","w");
+    for (int i = 1; i < BUF_LEN; i++) {
+        fprintf(fp3, "%d\n", sample3[i]);
+        myled = 0;
+    }
+    fclose(fp3);
+    myled = 1;
+    ///////
+    FILE *fp4 = fopen("/local/samples4.csv","w");
+    for (int i = 1; i < BUF_LEN; i++) {
+        fprintf(fp4, "%d\n", sample4[i]);
+        myled = 0;
+    }
+    fclose(fp4);
+    myled = 1;
+
 } 
  
 int main() {
-    
+  
     AD7606_Reset();
-    spi.format(8,2);
-    spi.frequency(5000000);
+    spi.format(8,3);
+    spi.frequency(6000000);
+    ticker.attach_us(AD7606_StartConv, INTERAL_US);
     
    while((wp < BUF_LEN)){
-     if (busy == 0)   
+     if ((busy == 0)&&(flag == 1)) 
         {
             cs = 0;
         for (int i = 0; i < CH_NUM; i++)
             {
                  s_adc_now[i] = spi.write(0x00);
-                 s_adc_now[i] = s_adc_now[i] * 256 + spi.write(0x00); /* 读数据 */   
+                 s_adc_now[i] = s_adc_now[i] * 256 + spi.write(0x00);   
                  
              }
         updateSamples();
         cs = 1;
-        AD7606_StartConv();
+        //AD7606_StartConv();
+        flag = 0;
+        //myled2 = flag;
         }
    }
+       ticker.detach();
        printSamples();
        
 }
