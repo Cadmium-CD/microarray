@@ -1,80 +1,57 @@
 #include "mbed.h"
 
-#define CH_NUM  4
-#define BUF_LEN 513
-#define SAMP_FREQ 44000
-#define INTERAL_US 1e6/SAMP_FREQ
- 
+#define CH_NUM  8
+#define BUF_LEN 2049
+#define SAMP_FREQ 50000
+//#define INTERAL_US 1e6/SAMP_FREQ
+ #define INTERAL_US 20
 SPI spi(p5, p6, p7); // mosi, miso, sclk
 DigitalOut cs(p8);
-DigitalIn busy(p9);
+InterruptIn button(p9);
 DigitalOut rst(p10);
-DigitalOut convst(p20);
+DigitalIn busy(p20);
+PwmOut convst(p21);
 DigitalOut myled(LED1);
 DigitalOut myled2(LED2);
 LocalFileSystem local("local");
-  
-Ticker ticker;
-
+Timer t;
+float s;
 int16_t sample1[BUF_LEN];  // store the values read from ADC
 int16_t sample2[BUF_LEN]; 
 int16_t sample3[BUF_LEN]; 
-int16_t sample4[BUF_LEN]; 
+//int16_t sample4[BUF_LEN]; 
 
 int wp = 0;
-int flag = 0;
+
 static int16_t s_adc_now[CH_NUM];
 
 //reset function
 void AD7606_Reset(){
         cs = 1;
-        convst = 1;
-        convst = 1;
-         /* AD7606 is high level reset£¬at least 50ns */
+        
         rst = 0;
-        //delayMicroseconds(1);
+       
         rst = 1;
         rst = 1;
         rst = 1;
-        rst = 1;
-        //delayMicroseconds(1);
+      
         rst = 0;
-}
-//conversion function
-void AD7606_StartConv(){
-        /* Conv in rising edge£¬at least 25ns  */
-        convst = 0;
-        convst = 0;
-        convst = 0;
-        myled = busy;
-        //delayMicroseconds(1);
-        convst = 1;
-        myled = busy;
-        flag = 1;
-        //myled2 = flag;
 }
 
 
-void updateSamples()
-{
-    sample1[wp] = s_adc_now[0];
-    sample2[wp] = s_adc_now[1];
-    sample3[wp] = s_adc_now[2];
-    sample4[wp] = s_adc_now[3];
-    wp++;
-    
-}
  
 void printSamples()
 {   ///////
+    myled = 1; 
+    //printf("aa\n");
     FILE *fp1 = fopen("/local/samples1.csv","w");
     for (int i = 1; i < BUF_LEN; i++) {
         fprintf(fp1, "%d\n", sample1[i]);
         myled = 0;
     }
     fclose(fp1);
-    myled = 1;
-    /////////
+    
+   ///////
     FILE *fp2 = fopen("/local/samples2.csv","w");
     for (int i = 1; i < BUF_LEN; i++) {
         fprintf(fp2, "%d\n", sample2[i]);
@@ -91,41 +68,68 @@ void printSamples()
     fclose(fp3);
     myled = 1;
     ///////
-    FILE *fp4 = fopen("/local/samples4.csv","w");
+    /*FILE *fp4 = fopen("/local/samples4.csv","w");
     for (int i = 1; i < BUF_LEN; i++) {
         fprintf(fp4, "%d\n", sample4[i]);
         myled = 0;
     }
     fclose(fp4);
-    myled = 1;
+    myled = 1;*/
 
 } 
- 
-int main() {
-  
-    AD7606_Reset();
-    spi.format(8,3);
-    spi.frequency(6000000);
-    ticker.attach_us(AD7606_StartConv, INTERAL_US);
-    
-   while((wp < BUF_LEN)){
-     if ((busy == 0)&&(flag == 1)) 
-        {
-            cs = 0;
+void record(){
+        //myled = 0;
+       
+        /*cs = 0;
+        
         for (int i = 0; i < CH_NUM; i++)
             {
-                 s_adc_now[i] = spi.write(0x00);
-                 s_adc_now[i] = s_adc_now[i] * 256 + spi.write(0x00);   
-                 
+               
+                 s_adc_now[i] = spi.write(0x0000);
+                 //s_adc_now[i] = s_adc_now[i] * 256 + spi.write(0x00);    
+                
              }
-        updateSamples();
+        cs = 1; 
+        sample1[wp] = s_adc_now[0];
+        sample2[wp] = s_adc_now[1];
+        sample3[wp] = s_adc_now[2];
+        sample4[wp] = s_adc_now[3];*/
+        cs = 0;
+        sample1[wp] = spi.write(0x0000);
+        sample2[wp] = spi.write(0x0000);
+        sample3[wp] = spi.write(0x0000);
+        //sample4[wp] = spi.write(0x0000);
         cs = 1;
-        //AD7606_StartConv();
-        flag = 0;
-        //myled2 = flag;
-        }
+        wp++;
+        //printf("%d\n",wp);
+        //myled = 1;
+       
+ }
+ 
+int main() {
+    spi.format(16,2);
+    spi.frequency(50000000);
+    convst.period(1.0f); 
+    convst.write(1.0f);
+    AD7606_Reset();
+    /*myled = 0;
+    myled = 1;
+    myled = 0; */
+    
+    convst.period_us(INTERAL_US);
+    convst.write(0.5f);
+   
+    //convst.pulsewidth_us(INTERAL_US-1);
+   
+    t.start(); 
+   while((wp < BUF_LEN)){
+        //myled2 = busy;
+        button.fall(&record); 
    }
-       ticker.detach();
-       printSamples();
+  // myled = 0;
+    s = t.read();
+    convst.write(1.0f);   
+    printf("%f",s);
+    printSamples();
        
 }
