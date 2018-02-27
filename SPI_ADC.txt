@@ -65,14 +65,22 @@ void record(){
  }
 
 int main() {
-    total.start();
     spi.format(16,2);
     spi.frequency(50000000);
+    //total.start();
+    
     //convst.period(1.0f); 
+    while(1){
+    //total.reset();
+    r12 = 0;
+    r13 = 5;
+    r14 = 5;
+    r23 = 10;
+    r24 = 10;
     convst.write(1.0f);
     convst.period_us(INTERAL_US);
     
-    while((abs(r13 - r12 - r23) > 2) && (abs(r14 - r12 - r24) > 2)){
+    while(((abs(r13 - r12 - r23) > 2) || (abs(r14 - r12 - r24) > 2))||(abs(r12)+abs(r13)+abs(r14)<5)||(r23 == 0) && (r24 == 0)){
         AD7606_Reset();
         convst.write(0.5f);
    
@@ -96,10 +104,10 @@ int main() {
     
     
     printf("Running time = %f\n",s);
-    printf("Total time = %f\n",total.read());
+    //printf("Total time = %f\n",total.read());
     printf("r12 = %d\nr13 = %d\nr14 = %d\nr23 = %d\nr24 = %d\n",r12,r13,r14,r23,r24);
     printf("Angle = %f\n",cal_angle());
-    printSamples();
-    
-       
+    //break;
+  }
+   //printSamples();    
 }
