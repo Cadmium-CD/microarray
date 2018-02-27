@@ -1,6 +1,6 @@
 #define CH_NUM  8
 #define BUF_LEN 1025
-#define SAMP_FREQ 39423
+#define SAMP_FREQ 37925
 //#define INTERAL_US 1e6/SAMP_FREQ
  #define INTERAL_US 22
 #define gccNUM 101
@@ -65,23 +65,23 @@ void scalling(){
      ma = (max(sample1,BUF_LEN));
      mi = (min(sample1,BUF_LEN));
      for (i=0; i<BUF_LEN; i++) {  
-        sample2_s[i] = 2*(sample1[i]-mi)/float(ma-mi)-1;
+        sample1_s[i] = 2*(sample1[i]-mi)/float(ma-mi)-1;
     }  
     
-     ma = (max(sample2,BUF_LEN));
-     mi = (min(sample2,BUF_LEN));
+     ma = (max(sample4,BUF_LEN));
+     mi = (min(sample4,BUF_LEN));
      for (i=0; i<BUF_LEN; i++) {  
-        sample3_s[i] = 2*(sample2[i]-mi)/float(ma-mi)-1;
+        sample2_s[i] = 2*(sample4[i]-mi)/float(ma-mi)-1;
     }  
      ma = (max(sample3,BUF_LEN));
      mi = (min(sample3,BUF_LEN));
      for (i=0; i<BUF_LEN; i++) {  
-        sample1_s[i] = 2*(sample3[i]-mi)/float(ma-mi)-1;
+        sample3_s[i] = 2*(sample3[i]-mi)/float(ma-mi)-1;
     }   
-     ma = (max(sample4,BUF_LEN));
-     mi = (min(sample4,BUF_LEN));
+     ma = (max(sample2,BUF_LEN));
+     mi = (min(sample2,BUF_LEN));
      for (i=0; i<BUF_LEN; i++) {  
-        sample4_s[i] = 2*(sample4[i]-mi)/float(ma-mi)-1;
+        sample4_s[i] = 2*(sample2[i]-mi)/float(ma-mi)-1;
     }    
 }
 int xcorr(float *x1,float *x2){
@@ -135,8 +135,8 @@ double cal_angle(){
      x = (-beta2-beta1)/(alpha1-alpha2);
      y = x*alpha1 + beta1;
      angle = atan(y/x)/pi*180;
-     printf("alpha1 = %f beta1 = %f\nalpha2 = %f beta2 = %f\n",alpha1, beta1,alpha2 ,beta2);
-     
+     //printf("alpha1 = %f beta1 = %f\nalpha2 = %f beta2 = %f\n",alpha1, beta1,alpha2 ,beta2);
+     //printf("X = %f Y = %f\n",x,y);
      if (r12 > 0){
       angle = angle + 180;
       }
