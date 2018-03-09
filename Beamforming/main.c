@@ -58,7 +58,7 @@ void printSamples()
     myled = 1;
     
     FILE *fpr = fopen("/local/results.csv","w");
-    for (int i = 1; i < OUT_LEN; i++) {
+    for (int i = 1; i < TOL_LEN; i++) {
         fprintf(fpr, "%d\n", results[i]);
         myled = 0;
     }
@@ -122,11 +122,12 @@ int main() {
     printf("r12 = %d\nr13 = %d\nr14 = %d\nr23 = %d\nr24 = %d\n",r12,r13,r14,r23,r24);
     direction = cal_angle();
     printf("Angle = %f\n",direction);
-    break;
-  }
-   initialize();
+    initialize();
    beamforming();
    printf("1 = %d\n2 = %d\n3 = %d\n4 = %d\n",ang_tri[0],ang_tri[1],ang_tri[2],ang_tri[3]);
+    break;
+  }
+  
    //printResults();
    printSamples();    
 }
