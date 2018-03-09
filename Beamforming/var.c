@@ -1,5 +1,5 @@
 #define BUF_LEN 1025
-#define SAMP_FREQ 53947
+#define SAMP_FREQ 44521
 //#define INTERAL_US 1e6/SAMP_FREQ
  #define INTERAL_US 18
 #define gccNUM 101
