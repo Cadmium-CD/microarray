@@ -92,8 +92,8 @@ double cal_angle(){
      delay3 = double(r24)/SAMP_FREQ;
      alpha1 = 1 - r13*2/double(r12);
      alpha2 = 1 - r24*2/double(-r12);
-     beta1 = 341*341*2*(delay1-delay2)*delay2;
-     beta2 = 341*341*2*(-delay1-delay3)*delay3;
+     beta1 = 341*341/0.14*(delay1-delay2)*delay2;
+     beta2 = 341*341/0.14*(-delay1-delay3)*delay3;
      x = (-beta2-beta1)/(alpha1-alpha2);
      y = x*alpha1 + beta1;
      angle = atan(y/x)/pi*180;
