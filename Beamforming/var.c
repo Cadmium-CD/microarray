@@ -1,8 +1,8 @@
-#define BUF_LEN 1025
-#define SAMP_FREQ 44521
+#define BUF_LEN 513
+#define SAMP_FREQ 36571
 //#define INTERAL_US 1e6/SAMP_FREQ
- #define INTERAL_US 18
-#define gccNUM 101
+ #define INTERAL_US 25
+#define gccNUM 40
 #define pi 3.1415926
 #define sound 341.0
 SPI spi(p5, p6, p7); // mosi, miso, sclk
@@ -20,7 +20,12 @@ float s;
 int16_t sample1[BUF_LEN];  // store the values read from ADC
 int16_t sample2[BUF_LEN]; 
 int16_t sample3[BUF_LEN]; 
-int16_t sample4[BUF_LEN]; 
+int16_t sample4[BUF_LEN];
+int16_t sample5[BUF_LEN];  
+int16_t sample6[BUF_LEN]; 
+int16_t sample7[BUF_LEN]; 
+int16_t sample8[BUF_LEN]; 
+ 
 float sample1_s[BUF_LEN];  
 float sample2_s[BUF_LEN]; 
 float sample3_s[BUF_LEN]; 
@@ -32,5 +37,5 @@ int r14 = 5;
 int r23 = 10;
 int r24 = 10;
 
-int wp = 0;
+volatile int wp = 0;
 double direction;
