@@ -27,23 +27,23 @@ void scalling(){
      ma = (max(sample1,BUF_LEN));
      mi = (min(sample1,BUF_LEN));
      for (i=0; i<BUF_LEN; i++) {  
-        sample1_s[i] = 2*(sample1[i]-mi)/float(ma-mi)-1;
+        sample1_s[i] = 2*(sample5[i]-mi)/float(ma-mi)-1;
     }  
     
      ma = (max(sample4,BUF_LEN));
      mi = (min(sample4,BUF_LEN));
      for (i=0; i<BUF_LEN; i++) {  
-        sample2_s[i] = 2*(sample2[i]-mi)/float(ma-mi)-1;
+        sample2_s[i] = 2*(sample7[i]-mi)/float(ma-mi)-1;
     }  
      ma = (max(sample3,BUF_LEN));
      mi = (min(sample3,BUF_LEN));
      for (i=0; i<BUF_LEN; i++) {  
-        sample3_s[i] = 2*(sample3[i]-mi)/float(ma-mi)-1;
+        sample3_s[i] = 2*(sample6[i]-mi)/float(ma-mi)-1;
     }   
      ma = (max(sample2,BUF_LEN));
      mi = (min(sample2,BUF_LEN));
      for (i=0; i<BUF_LEN; i++) {  
-        sample4_s[i] = 2*(sample4[i]-mi)/float(ma-mi)-1;
+        sample4_s[i] = 2*(sample8[i]-mi)/float(ma-mi)-1;
     }    
 }
 int xcorr(float *x1,float *x2){
@@ -83,6 +83,9 @@ int xcorr(float *x1,float *x2){
         }
         //printf("\n%f\n",max);
         j = j - gccNUM+1;        //j-n-1
+        if(abs(j) > 80){
+            j = 1/(1-1);
+            }
         return j;
 }
 double cal_angle(){
