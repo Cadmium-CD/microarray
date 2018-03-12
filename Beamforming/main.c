@@ -59,22 +59,56 @@ void printSamples()
     
     FILE *fpr = fopen("/local/results.csv","w");
     for (int i = 1; i < TOL_LEN; i++) {
-        fprintf(fpr, "%d\n", results[i]);
+        fprintf(fpr, "%f\n", results[i]);
         myled = 0;
     }
     fclose(fpr);
+    
+    /*FILE *fp5 = fopen("/local/samples5.csv","w");
+    for (int i = 1; i < BUF_LEN; i++) {
+        fprintf(fp5, "%d\n", sample5[i]);
+        myled = 0;
+    }
+    fclose(fp5);
+    myled = 1;
+    
+    FILE *fp6 = fopen("/local/samples6.csv","w");
+    for (int i = 1; i < BUF_LEN; i++) {
+        fprintf(fp6, "%d\n", sample6[i]);
+        myled = 0;
+    }
+    fclose(fp6);
+    myled = 1;
+    FILE *fp7 = fopen("/local/samples7.csv","w");
+    for (int i = 1; i < BUF_LEN; i++) {
+        fprintf(fp7, "%d\n", sample7[i]);
+        myled = 0;
+    }
+    fclose(fp7);
+    myled = 1;
+    FILE *fp8 = fopen("/local/samples8.csv","w");
+    for (int i = 1; i < BUF_LEN; i++) {
+        fprintf(fp8, "%d\n", sample8[i]);
+        myled = 0;
+    }
+    fclose(fp8);
+    myled = 1;*/
 
 
 } 
 void record(){
-        //a = 1;
+        a = 1;
         cs = 0;
         sample1[wp] = spi.write(0x0000);
         sample2[wp] = spi.write(0x0000);
         sample3[wp] = spi.write(0x0000);
         sample4[wp] = spi.write(0x0000);
+        sample5[wp] = spi.write(0x0000);
+        sample6[wp] = spi.write(0x0000);
+        sample7[wp] = spi.write(0x0000);
+        sample8[wp] = spi.write(0x0000);
         cs = 1;
-        //a = 0;
+        a = 0;
         wp++;
  }
 
@@ -93,6 +127,7 @@ int main() {
     r24 = 10;
     convst.write(1.0f);
     convst.period_us(INTERAL_US);
+    button.fall(&record); 
     
     while(((abs(r13 - r12 - r23) > 2) || (abs(r14 - r12 - r24) > 2))||(abs(r12)+abs(r13)+abs(r14)<5)||(r23 == 0) && (r24 == 0)){
         AD7606_Reset();
@@ -100,7 +135,7 @@ int main() {
    
          t.start(); 
          while((wp < BUF_LEN)){
-             button.fall(&record); 
+             
           }
    //myled = 1;
          s = t.read();
@@ -124,10 +159,10 @@ int main() {
     printf("Angle = %f\n",direction);
     initialize();
    beamforming();
-   printf("1 = %d\n2 = %d\n3 = %d\n4 = %d\n",ang_tri[0],ang_tri[1],ang_tri[2],ang_tri[3]);
-    break;
+   printf("1 = %d\n2 = %d\n3 = %d\n4 = %d\n5 = %d\n6 = %d\n7 = %d\n7 = %d\n",ang_tri[0],ang_tri[2],ang_tri[4],ang_tri[6],ang_tri[1],ang_tri[3],ang_tri[5],ang_tri[7]);
+    //break;
   }
   
    //printResults();
-   printSamples();    
+   //printSamples();    
 }
