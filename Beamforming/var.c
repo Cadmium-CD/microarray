@@ -1,10 +1,11 @@
 #define BUF_LEN 513
 #define SAMP_FREQ 36571
 //#define INTERAL_US 1e6/SAMP_FREQ
- #define INTERAL_US 25
+ #define INTERAL_US 100
 #define gccNUM 40
 #define pi 3.1415926
 #define sound 341.0
+#define check_r 15
 SPI spi(p5, p6, p7); // mosi, miso, sclk
 DigitalOut cs(p8);
 InterruptIn button(p9);
@@ -38,4 +39,4 @@ int r23 = 10;
 int r24 = 10;
 
 volatile int wp = 0;
-double direction;
+double direction,phi;

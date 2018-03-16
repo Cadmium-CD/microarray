@@ -128,8 +128,9 @@ int main() {
     convst.write(1.0f);
     convst.period_us(INTERAL_US);
     button.fall(&record); 
-    
-    while(((abs(r13 - r12 - r23) > 2) || (abs(r14 - r12 - r24) > 2))||(abs(r12)+abs(r13)+abs(r14)<5)||(r23 == 0) && (r24 == 0)){
+    //while((abs(r13 - r12 - r23) > 2)|| (abs(r14 - r12 - r24) > 2)||(abs(r12)+abs(r13)+abs(r14)<5)||(r12 > 25) || (r13 >25)){
+    while(check()){
+        //printf("%d\n",check());
         AD7606_Reset();
         convst.write(0.5f);
    
@@ -151,7 +152,7 @@ int main() {
          r24 = xcorr(sample2_s, sample4_s);
    } 
     
-    
+    //printf("%d\n",check());
     printf("Running time = %f\n",s);
     //printf("Total time = %f\n",total.read());
     printf("r12 = %d\nr13 = %d\nr14 = %d\nr23 = %d\nr24 = %d\n",r12,r13,r14,r23,r24);
