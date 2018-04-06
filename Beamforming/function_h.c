@@ -29,20 +29,20 @@ void scalling(){
         sample1_s[i] = 2*(sample1[i]-mi)/float(ma-mi)-1;
     }  
     
-     ma = (max(sample2,BUF_LEN));
-     mi = (min(sample2,BUF_LEN));
+     ma = (max(sample9,BUF_LEN));
+     mi = (min(sample9,BUF_LEN));
      for (i=0; i<BUF_LEN; i++) {  
-        sample2_s[i] = 2*(sample2[i]-mi)/float(ma-mi)-1;
+        sample2_s[i] = 2*(sample9[i]-mi)/float(ma-mi)-1;
     }  
-     ma = (max(sample3,BUF_LEN));
-     mi = (min(sample3,BUF_LEN));
+     ma = (max(sample5,BUF_LEN));
+     mi = (min(sample5,BUF_LEN));
      for (i=0; i<BUF_LEN; i++) {  
-        sample3_s[i] = 2*(sample3[i]-mi)/float(ma-mi)-1;
+        sample3_s[i] = 2*(sample5[i]-mi)/float(ma-mi)-1;
     }   
-     ma = (max(sample4,BUF_LEN));
-     mi = (min(sample4,BUF_LEN));
+     ma = (max(sample13,BUF_LEN));
+     mi = (min(sample13,BUF_LEN));
      for (i=0; i<BUF_LEN; i++) {  
-        sample4_s[i] = 2*(sample4[i]-mi)/float(ma-mi)-1;
+        sample4_s[i] = 2*(sample13[i]-mi)/float(ma-mi)-1;
     }    
 }
 int xcorr(float *x1,float *x2){
@@ -101,7 +101,7 @@ double cal_angle(){
      x = (beta2-beta1)/(alpha1-alpha2);
      y = x*alpha1 + beta1;
      angle = atan(y/x)/pi*180;
-     printf("alpha1 = %f beta1 = %f\nalpha2 = %f beta2 = %f\nphi = %f\n",alpha1, beta1,alpha2 ,beta2,phi);
+     //printf("alpha1 = %f beta1 = %f\nalpha2 = %f beta2 = %f\nphi = %f\n",alpha1, beta1,alpha2 ,beta2,phi);
      //printf("X = %f Y = %f\n",x,y);
      if (abs(alpha1-alpha2)< 0.02){
          angle = atan(alpha1)/pi*180;
@@ -109,9 +109,25 @@ double cal_angle(){
      if (r12 > 0){
       angle = angle + 180;
       }
+     if(r12 == 0){
+         if(r13 > 0){
+             angle = 90;
+             }else{
+                 angle = 270;
+                 }
+         }
+     if (((r13-r14) < 0)&&((angle>0)&&(angle<90))){
+        angle = -angle;
+        }
+      if (((r13-r14) > 0)&&((angle>-90)&&(angle<0))){
+        angle = phi;
+        }
      if (angle < 0){
-      angle = angle + 360;
+       angle = angle + 360;
       }
+     /*if ((alpha1 > 0)&&((angle>45)&&(angle<90))){
+        angle = angle+180;
+        }*/
       return angle;
     }
     
@@ -119,20 +135,28 @@ int check(){
     if((abs(r13 - r12 - r23) > 2)|| (abs(r14 - r12 - r24) > 2)||(abs(r12)+abs(r13)+abs(r14)<5)||(r12 > 25) || (r13 >25)){
         return 1;
         }
+    if (direction > 500){
+        return 1;
+        }
     if ((direction <360) && (direction >= 270)){
         if(abs(direction + phi - 360)> check_r){
             return 1;
             }
-        }else if ((direction <270) && (direction >= 180)){
-                if(abs(direction - phi - 180)> check_r){
-                    return 1;
-                 }
-                }else if ((direction <180) && (direction >= 90)){
-                        if(abs(direction + phi - 180)> check_r){
-                            return 1;
-                        }
-                } else if (abs(direction - phi)> check_r){
-                            return 1;
-                        }
+        }
+    if ((direction <270) && (direction >= 180)){
+        if(abs(direction - phi - 180)> check_r){
+            return 1;
+            }
+        }
+    if ((direction <180) && (direction >= 90)){
+        if(abs(direction + phi - 180)> check_r){
+            return 1;
+            }
+        }
+    if ((abs(direction - phi)> check_r)&&((direction <90) && (direction >= 0))){
+            myled2 = 1;
+            return 1;
+           }   
+
     return 0;
     }

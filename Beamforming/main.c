@@ -8,7 +8,8 @@
 
 //reset function
 void AD7606_Reset(){
-        cs = 1;
+        cs1 = 1;
+        cs2 = 1;
         
         rst = 0;
        
@@ -24,39 +25,22 @@ void AD7606_Reset(){
 void printSamples()
 {   ///////
     myled = 1; 
-    //printf("aa\n");
-    FILE *fp1 = fopen("/local/samples1.csv","w");
+    FILE *fp1 = fopen("/local/data1.csv","w");
     for (int i = 1; i < BUF_LEN; i++) {
-        fprintf(fp1, "%d\n", sample1[i]);
+        fprintf(fp1, "%d,%d,%d,%d,%d,%d,%d,%d\n", sample1[i],sample2[i],sample3[i],sample4[i],sample5[i],sample6[i],sample7[i],sample8[i]);
         myled = 0;
     }
     fclose(fp1);
     
-   ///////
-    FILE *fp2 = fopen("/local/samples2.csv","w");
+    myled = 1; 
+    FILE *fp2 = fopen("/local/data2.csv","w");
     for (int i = 1; i < BUF_LEN; i++) {
-        fprintf(fp2, "%d\n", sample2[i]);
+        fprintf(fp2, "%d,%d,%d,%d,%d,%d,%d,%d\n", sample9[i],sample10[i],sample11[i],sample12[i],sample13[i],sample14[i],sample15[i],sample16[i]);
         myled = 0;
     }
     fclose(fp2);
-    myled = 1;
-    ///////
-    FILE *fp3 = fopen("/local/samples3.csv","w");
-    for (int i = 1; i < BUF_LEN; i++) {
-        fprintf(fp3, "%d\n", sample3[i]);
-        myled = 0;
-    }
-    fclose(fp3);
-    myled = 1;
-     ///////
-    FILE *fp4 = fopen("/local/samples4.csv","w");
-    for (int i = 1; i < BUF_LEN; i++) {
-        fprintf(fp4, "%d\n", sample4[i]);
-        myled = 0;
-    }
-    fclose(fp4);
-    myled = 1;
-    
+  
+    myled = 1; 
     FILE *fpr = fopen("/local/results.csv","w");
     for (int i = 1; i < TOL_LEN; i++) {
         fprintf(fpr, "%f\n", results[i]);
@@ -64,41 +48,19 @@ void printSamples()
     }
     fclose(fpr);
     
-    /*FILE *fp5 = fopen("/local/samples5.csv","w");
-    for (int i = 1; i < BUF_LEN; i++) {
-        fprintf(fp5, "%d\n", sample5[i]);
-        myled = 0;
-    }
-    fclose(fp5);
-    myled = 1;
+    myled = 1; 
+    FILE *fpa = fopen("/local/angle.csv","w");
+
+    fprintf(fpa,",%d,%d,%d,%d,%d\n",r12,r13,r14,r23,r24);
+    fprintf(fpa,",%f\n",direction);
+    fclose(fpa);
     
-    FILE *fp6 = fopen("/local/samples6.csv","w");
-    for (int i = 1; i < BUF_LEN; i++) {
-        fprintf(fp6, "%d\n", sample6[i]);
-        myled = 0;
-    }
-    fclose(fp6);
-    myled = 1;
-    FILE *fp7 = fopen("/local/samples7.csv","w");
-    for (int i = 1; i < BUF_LEN; i++) {
-        fprintf(fp7, "%d\n", sample7[i]);
-        myled = 0;
-    }
-    fclose(fp7);
-    myled = 1;
-    FILE *fp8 = fopen("/local/samples8.csv","w");
-    for (int i = 1; i < BUF_LEN; i++) {
-        fprintf(fp8, "%d\n", sample8[i]);
-        myled = 0;
-    }
-    fclose(fp8);
-    myled = 1;*/
 
 
 } 
 void record(){
         a = 1;
-        cs = 0;
+        cs1 = 0;
         sample1[wp] = spi.write(0x0000);
         sample2[wp] = spi.write(0x0000);
         sample3[wp] = spi.write(0x0000);
@@ -107,7 +69,17 @@ void record(){
         sample6[wp] = spi.write(0x0000);
         sample7[wp] = spi.write(0x0000);
         sample8[wp] = spi.write(0x0000);
-        cs = 1;
+        cs1 = 1;
+        cs2 = 0;
+        sample16[wp] = spi.write(0x0000);
+        sample15[wp] = spi.write(0x0000);
+        sample14[wp] = spi.write(0x0000);
+        sample13[wp] = spi.write(0x0000);
+        sample12[wp] = spi.write(0x0000);
+        sample11[wp] = spi.write(0x0000);
+        sample10[wp] = spi.write(0x0000);
+        sample9[wp] = spi.write(0x0000);
+        cs2 = 1;
         a = 0;
         wp++;
  }
@@ -150,20 +122,23 @@ int main() {
          r14 = xcorr(sample1_s, sample4_s);
          r23 = xcorr(sample2_s, sample3_s);
          r24 = xcorr(sample2_s, sample4_s);
+         direction = cal_angle();
+         //break;
    } 
     
     //printf("%d\n",check());
     printf("Running time = %f\n",s);
     //printf("Total time = %f\n",total.read());
     printf("r12 = %d\nr13 = %d\nr14 = %d\nr23 = %d\nr24 = %d\n",r12,r13,r14,r23,r24);
-    direction = cal_angle();
+    //direction = cal_angle();
+    printf("Phi = %f\n",phi);
     printf("Angle = %f\n",direction);
     initialize();
    beamforming();
-   printf("1 = %d\n2 = %d\n3 = %d\n4 = %d\n5 = %d\n6 = %d\n7 = %d\n7 = %d\n",ang_tri[0],ang_tri[2],ang_tri[4],ang_tri[6],ang_tri[1],ang_tri[3],ang_tri[5],ang_tri[7]);
+   //printf("1 = %d\n2 = %d\n3 = %d\n4 = %d\n5 = %d\n6 = %d\n7 = %d\n7 = %d\n",ang_tri[0],ang_tri[2],ang_tri[4],ang_tri[6],ang_tri[1],ang_tri[3],ang_tri[5],ang_tri[7]);
     //break;
   }
   
    //printResults();
-   //printSamples();    
+   printSamples();    
 }

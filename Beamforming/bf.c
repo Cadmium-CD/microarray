@@ -1,5 +1,5 @@
 #define D 0.1
-#define CH_NUM  8
+#define CH_NUM  16
 #define RES 2
 #define ANG_NUM 360/RES
 #define OUT_LEN 100
@@ -51,8 +51,10 @@ void initialize(){
 void beamforming(){
      double buffer;
      for(int i = 0;i < TOL_LEN;i++){
-        buffer = double(sample1[OUT_LEN-ang_tri[0]+i]+sample2[OUT_LEN-ang_tri[2]+i]+sample3[OUT_LEN-ang_tri[4]+i]+sample4[OUT_LEN-ang_tri[6]+i]\
-                       +sample5[OUT_LEN-ang_tri[1]+i]+sample6[OUT_LEN-ang_tri[3]+i]+sample7[OUT_LEN-ang_tri[5]+i]+sample8[OUT_LEN-ang_tri[7]+i]);
+        buffer = double(sample1[OUT_LEN-ang_tri[0]+i]+sample2[OUT_LEN-ang_tri[1]+i]+sample3[OUT_LEN-ang_tri[2]+i]+sample4[OUT_LEN-ang_tri[3]+i]\
+                       +sample5[OUT_LEN-ang_tri[4]+i]+sample6[OUT_LEN-ang_tri[5]+i]+sample7[OUT_LEN-ang_tri[6]+i]+sample8[OUT_LEN-ang_tri[7]+i]\
+                       +sample9[OUT_LEN-ang_tri[8]+i]+sample10[OUT_LEN-ang_tri[9]+i]+sample11[OUT_LEN-ang_tri[10]+i]+sample12[OUT_LEN-ang_tri[11]+i]\
+                       +sample13[OUT_LEN-ang_tri[12]+i]+sample14[OUT_LEN-ang_tri[12]+i]+sample15[OUT_LEN-ang_tri[14]+i]+sample16[OUT_LEN-ang_tri[15]+i]);
         results[i] = buffer/CH_NUM;
         //printf("%f\n",buffer);
         buffer = 0;
